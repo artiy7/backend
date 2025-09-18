@@ -10,7 +10,7 @@ async def websocket_match(websocket: WebSocket):
 
     try:
         data = await websocket.receive_json()
-        email = data.get("email")
+        email = data.get("value")
         tier = data.get("tier")
         print(email, tier)
         if not email or not tier:
@@ -18,7 +18,7 @@ async def websocket_match(websocket: WebSocket):
             await websocket.close()
             return
 
-        await match_manager.enqueue(websocket, email=email, tier=tier)
+        await match_manager.enqueue(websocket)
 
     except Exception as e:
         print(f"❌ WebSocket 수신 중 오류 발생: {e}")
