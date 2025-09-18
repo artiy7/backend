@@ -12,7 +12,7 @@ async def websocket_match(websocket: WebSocket):
         data = await websocket.receive_json()
         email = data.get("email")
         tier = data.get("tier")
-
+        print(email, tier)
         if not email or not tier:
             await websocket.send_json({"error": "이메일 또는 티어 정보가 없습니다."})
             await websocket.close()
