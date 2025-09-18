@@ -7,7 +7,22 @@ match_manager = MatchManager()
 @router.websocket("/ws/match")
 async def websocket_match(websocket: WebSocket):
     await websocket.accept()
-    await match_manager.enqueue(websocket)
+
+    try:
+        data = await websocket.receive_json()
+        email = data.get("email")
+        tier = data.get("tier")
+
+        if not email or not tier:
+            await websocket.send_json({"error": "이메일 또는 티어 정보가 없습니다."})
+            await websocket.close()
+            return
+
+        await match_manager.enqueue(websocket, email=email, tier=tier)
+
+    except Exception as e:
+        print(f"❌ WebSocket 수신 중 오류 발생: {e}")
+        await websocket.close()
     
 @router.post("/match/leave")
 async def http_leave(email: str = Query(...)):
